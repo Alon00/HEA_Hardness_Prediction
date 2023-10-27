@@ -8,19 +8,15 @@ Created on Thu Mar  2 10:47:59 2023
 File to upload, clean and prepare all of the data for the Ml algorithms
 
 - Description: File that includes the ML models for hardness prediction of HEA
-- Objective: Try several ML models to find the best performing algorithm
+- Objective: Dessign several ML models to find the best performing algorithm
 - Problem type: Supervised machine learning - Regression
 - Input: 
     Data source: Premade DF from "HEA_Property_DatabaseFormation"
-    Features: Formula, FBCV
+    Features: Formula, FBCV, Fractional
 - Output:
-    Parameter: 
-    Results: 
-    
-- Comments: -
-
-- Improvements: 
-"""
+    Parameter: 4 Models (NN, SVR, RF, GPR)
+    Results: Best performing model is the RF with RMSE=95.99 & R2=0.81
+    """
 #%%----------Import libraries----------##
 import numpy as np     #NumPy - Used mainly for matrix operations
 import pandas as pd    #Pandas - library for data analysis and cleanup before training the model
@@ -33,6 +29,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, RationalQuadratic, ExpSineSquared
 from sklearn.pipeline import Pipeline
+from joblib import dump, load
 
 
 #%%----------Functions----------##
@@ -47,7 +44,7 @@ path_elements = r"C:\Users\alonp\OneDrive\Desktop\TFM - Alonso Cuartero\AI - HEA
 df_elements = pd.read_csv(path_elements)
 
 #Create DataFrame
-df = pd.read_csv(fractional_path)
+df = pd.read_csv(cbfv_path)
 del cbfv_path, fractional_path
 
 
@@ -59,8 +56,8 @@ list_Pd_composition = ["Co0.2Cr0.2Fe0.2Ni0.2Pd0.2",
                        "Co0.17857143Cr0.17857143Fe0.17857143Mn0.10714286Ni0.17857143Pd0.17857143", 
                        "Co0.17241379Cr0.17241379Fe0.17241379Mn0.13793103Ni0.17241379Pd0.17241379"]
 
-df_Pd_test = df[df["Formula"].isin(list_Pd_composition)].reset_index(drop = True)   #Create a df taht includes the values for P
-df = df[~df["Formula"].isin(list_Pd_composition)].reset_index(drop = True)  #Remove the values of PD from df
+df_Pd_test = df[df["Formula"].isin(list_Pd_composition)].reset_index(drop = True)   #Create a df taht includes the values for Pd
+df = df[~df["Formula"].isin(list_Pd_composition)].reset_index(drop = True)  #Remove the values of Pd from df
 del list_Pd_composition
 
 #Define a random seed for all data 
@@ -68,6 +65,12 @@ rng = np.random.RandomState(1)
 
 #Randomly shuffle all of the data
 df = df.sample(frac = 1, random_state = rng, ignore_index = True)
+
+
+#Change the values from categorical to numerical so the models can process them. For simolicity make it a boolean 0-1 if CAST/ANNEAL-POWDER
+# df.loc[df['Processing'].isin(['CAST', 'ANNEAL']), 'Processing'] = 1
+# df.loc[df['Processing'].isin(['POWDER']), 'Processing'] = 0
+
 
 #Change the index so it matches the formula of the alloy
 index_df = df.pop("Formula")
@@ -128,13 +131,16 @@ grid_search = pd.DataFrame(search.cv_results_)  #Convert the results into a Data
 optimum_model_results = f.OptimumModelResutls(grid_search, len(hyperparam_grid), search)    #Create a DataFrame with the best model only
 
 
-#Test the model agains the test dataset
+#Test the model against the test dataset
 y_pred = search.predict(X_test)
 r2, mae, rmse = f.evalMetrics(y_test, y_pred)     #Calculation of the evaluation metrics
 
 
 #Visualize test validation
 f.showResults(y_test, y_pred)
+
+#Save the trained model 
+dump(search, 'NN_trained.joblib') 
 
 
 #%%----------Create Train and Test SVR Model----------##
@@ -175,6 +181,9 @@ r2, mae, rmse = f.evalMetrics(y_test, y_pred)     #Calculation of the evaluation
 
 #Visualize test validation
 f.showResults(y_test, y_pred)
+
+#Save the trained model 
+dump(search, 'SVR_trained.joblib') 
 
 
 #%%----------Create Train and Test Random Forest Model----------##
@@ -219,14 +228,15 @@ optimum_model_results = f.OptimumModelResutls(grid_search, len(hyperparam_grid),
 y_pred = search.predict(X_test)
 r2, mae, rmse = f.evalMetrics(y_test, y_pred)     #Calculation of the evaluation metrics
 
-
 #Visualize test validation
 f.showResults(y_test, y_pred)
 
+#Save the trained model 
+dump(search, 'RF_trained.joblib') 
 
 #-----Test the model against the Pd data it has never seen-----
 print("Dado que el RF nos proporciona el mejor resultado, se intenta predecir el Pd con este modelo")
-y_pred = cross_val_predict(RF_Pipe, df_Pd_test[df_Pd_test.columns[2:]], df_Pd_test[df_Pd_test.columns[1]], cv = folds)
+y_pred = cross_val_predict(RF_Pipe, df_Pd_test[df_Pd_test.columns[3:]], df_Pd_test[df_Pd_test.columns[1]], cv = folds)
 r2, mae, rmse = f.evalMetrics(df_Pd_test[df_Pd_test.columns[1]], y_pred)     #Calculation of the evaluation metrics
 
 #Visualize test validation
@@ -300,14 +310,17 @@ r2, mae, rmse = f.evalMetrics(y_test, y_pred)     #Calculation of the evaluation
 #Visualize test validation
 f.showResults(y_test, y_pred)
 
+#Save the trained model 
+dump(search, 'GP_trained.joblib') 
+
 
 #%%----------Expplore test results----------##
 final_performance = pd.DataFrame({"MAE": [71.33, 91.71, 64.91, 108.22],
                                 "RMSE": [107.63, 123.51, 95.99, 145.31],
-                                "R2": [0.76, 0.68, 0.81, 0.56]}, index = ["NN", "SVR", "RF", "GPR"])
+                                "R2": [0.76, 0.68, 0.81, 0.56]}, index = ["NN", "SVR", "RF", "GP"])
 
 plt.scatter(final_performance["R2"][0], final_performance["RMSE"][0], 100)
-plt.scatter(final_performance["R2"][1], final_performance["RMSE"][1], 100)
+plt.scatter(final_performance["R2"][1], final_performance["RMSE"][1], 100) 
 plt.scatter(final_performance["R2"][2], final_performance["RMSE"][2], 100)
 plt.scatter(final_performance["R2"][3], final_performance["RMSE"][3], 100)
 plt.xlabel("R2")

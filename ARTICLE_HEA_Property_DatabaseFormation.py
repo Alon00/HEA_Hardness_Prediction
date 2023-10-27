@@ -11,15 +11,10 @@ File to upload, clean and prepare all of the data for the Ml algorithms
 - Objective: Obtain the best database possible for HV prediction
 - Problem type: Data mining
 - Input: 
-    Data source: 4 df (2 including hardness & 2 including microestructure)
-    Features: a lot of differente experimental values
+    Data source: 2 databases from the literature
+    Features: all experimental values
 - Output:
-    Parameter: 1 hardness df with composition/hardness/CBFV
-    Results: 1 database with 415 items + possibility of a microestructure hardness
-    
-- Comments: -
-
-- Improvements: combine datasets to add microestructure as a parameter. Data augmentation
+    Database: 2 databases, one with fractional composition and another with CBFV
 """
 #%%----------Import libraries----------##
 import pandas as pd    #Pandas - library for data analysis and cleanup before training the model
@@ -103,6 +98,9 @@ df4_Formula = f.fractionalFormulaCreation(df4[df4.columns[:-1]])  #Input as argu
 df4.insert(0, "Formula", df4_Formula)   #Add the newly created vector to the first index of the df
 del df4_Formula
 
+#Add a column with the processing route 
+df4["Processing"] = ["CAST"]*len(df4["Hardness_HV"])
+
 #Format the formula 
 df4["Formula"] = f.formatFormula(df4["Formula"])
 #Having the appropiate formual format, the fractional representation becomes useless
@@ -116,8 +114,13 @@ df4 = df4[~vector_doubles]  #Since the vector includes True for repeated values,
 
 #%%----------DF1+DF4----------##
 #Join the dataframes to create the final tadabase
-df1 = df1[["Formula", "Hardness_HV"]]
+df1 = df1[["Formula", "Hardness_HV", "Processing"]]
+
 df = pd.concat([df1, df4], ignore_index = True)
+
+#When processing route wants to be ignored: 
+df = df.drop(columns=["Processing"])
+
 
 #Remove duplicate formulas with a 10% margin, we do this to avoid having too many data from one family
 vector_doubles = pd.Series(f.repeatedFormula(df["Formula"]))
