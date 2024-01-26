@@ -188,15 +188,15 @@ FRACTIONAL_DF = FRACTIONAL_DF.drop(177).reset_index(drop = True)
 
 #%%----------Export final dataframe----------##
 #Exportar LOS df a cvs para no tener que correr este código cada vez 
-CBFV_DF.to_csv(r'C:\Users\alonp\OneDrive\Desktop\TFM - Alonso Cuartero\AI - HEA\Article\Code\Data\Processed_data\CBFV_DF_Property.csv', index = False)
-FRACTIONAL_DF.to_csv(r'C:\Users\alonp\OneDrive\Desktop\TFM - Alonso Cuartero\AI - HEA\Article\Code\Data\Processed_data\FRACTIONAL_DF_Property.csv', index = False)
+CBFV_DF.to_csv(r'C:\Local_path\Data\Processed_data\CBFV_DF_Property.csv', index = False)
+FRACTIONAL_DF.to_csv(r'C:\Local_path\Data\Processed_data\FRACTIONAL_DF_Property.csv', index = False)
 
 
 
 #%%----------Expplore test results----------##
 
-y_test = pd.read_csv(r'C:\Users\alonp\OneDrive\Desktop\TFM - Alonso Cuartero\AI - HEA\TFM_Python_Code\Results\Validation\y_test.csv')
-y_pred = pd.read_csv(r'C:\Users\alonp\OneDrive\Desktop\TFM - Alonso Cuartero\AI - HEA\TFM_Python_Code\Results\Validation\y_pred.csv')
+y_test = pd.read_csv(r'C:\Local_path\Results\Validation\y_test.csv')
+y_pred = pd.read_csv(r'C:\Local_path\Results\Validation\y_pred.csv')
 dif_sqrd = (y_pred["0"] - y_test["Hardness_HV"])**2
 
 df_just_elements = f.justElements(y_test["Unnamed: 0"])  #Creates a df with a column per element in the alloy
