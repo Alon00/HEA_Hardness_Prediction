@@ -35,8 +35,8 @@ from joblib import dump, load
 
 #%%----------Load data----------##
 #Define data path
-path = r"C:\Users\alonp\OneDrive\Desktop\TFM - Alonso Cuartero\AI - HEA\Article\Code\Experimental_data\Real_predictions.csv"
-path_elements = r"C:\Users\alonp\OneDrive\Desktop\TFM - Alonso Cuartero\AI - HEA\Article\Code\Data\Raw_data\Elements_Periodic_Table.csv"
+path = r"C:\Local_path\Experimental_data\Real_predictions.csv"
+path_elements = r"C:\Local_path\Data\Raw_data\Elements_Periodic_Table.csv"
 
 #Create dataframes
 df = pd.read_csv(path, header = 0)
