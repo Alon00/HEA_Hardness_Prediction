@@ -38,9 +38,9 @@ import Functions as f
 
 #%%----------Load data----------##
 #Define datapath
-cbfv_path = r"C:\Users\alonp\OneDrive\Desktop\TFM - Alonso Cuartero\AI - HEA\Article\Code\Data\Processed_data\CBFV_DF_Property.csv"
-fractional_path = r"C:\Users\alonp\OneDrive\Desktop\TFM - Alonso Cuartero\AI - HEA\Article\Code\Data\Processed_data\FRACTIONAL_DF_Property.csv"
-path_elements = r"C:\Users\alonp\OneDrive\Desktop\TFM - Alonso Cuartero\AI - HEA\Article\Code\Data\Raw_data\Elements_Periodic_Table.csv"
+cbfv_path = r"C:\Local_path\Data\Processed_data\CBFV_DF_Property.csv"
+fractional_path = r"C:\Local_path\Data\Processed_data\FRACTIONAL_DF_Property.csv"
+path_elements = r"C:\Local_path\Data\Raw_data\Elements_Periodic_Table.csv"
 df_elements = pd.read_csv(path_elements)
 
 #Create DataFrame
