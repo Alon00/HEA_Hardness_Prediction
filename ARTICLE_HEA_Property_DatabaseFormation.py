@@ -25,9 +25,9 @@ import pymatgen.util.plotting as pymat_plt     #poder generar un periodic table 
 
 #%%----------Load data----------##
 #Define data path
-path1 = r"C:\Users\alonp\OneDrive\Desktop\TFM - Alonso Cuartero\AI - HEA\Article\Code\Data\Raw_data\Data1_Expanded dataset of mechanical properties and observed phases of multi-principal element alloys.csv"
-path4 = r"C:\Users\alonp\OneDrive\Desktop\TFM - Alonso Cuartero\AI - HEA\Article\Code\Data\Raw_data\Data4_Machine learning assisted design of high entropy alloys with desired property.csv"
-path_elements = r"C:\Users\alonp\OneDrive\Desktop\TFM - Alonso Cuartero\AI - HEA\Article\Code\Data\Raw_data\Elements_Periodic_Table.csv"
+path1 = r"C:\Local_path\Data\Raw_data\Data1_Expanded dataset of mechanical properties and observed phases of multi-principal element alloys.csv"
+path4 = r"C:\Local_path\Data\Raw_data\Data4_Machine learning assisted design of high entropy alloys with desired property.csv"
+path_elements = r"C:\Local_path\Data\Raw_data\Elements_Periodic_Table.csv"
 
 #Define column names
 columns1 = ["Reference_ID", "Formula", "Microstructure", "Processing", "FCC_BCC_Other", "Grain_size", "Exp_Density", "Calc_Density", "Hardness_HV", "Test_type", "Tests_Temp", "YS", "UTS", "Elong", "Plas_Elong", "Elastic_Mod", "Calc_Elastic_Mod", "O_content", "N_content", "C_content", "DOI", "Year", "Title"]
